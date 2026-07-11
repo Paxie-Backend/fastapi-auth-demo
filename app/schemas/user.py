@@ -3,7 +3,7 @@ from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
 class UserBase(BaseModel):
     first_name: str = Field(min_length=2, max_length=50)
-    last_name: str = Field(min_length=2, max_length=100)
+    last_name: str | None = Field(min_length=2, max_length=100, default=None)
     email: EmailStr = Field(max_length=120)
 
 class UserCreate(UserBase):
@@ -26,3 +26,4 @@ class UserLogin(BaseModel):
 class UserInDB(UserBase):
     id: int
     hashed_password: str
+
