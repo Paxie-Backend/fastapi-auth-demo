@@ -1,5 +1,4 @@
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
-from typing import Union
 
 
 class UserBase(BaseModel):
@@ -23,3 +22,7 @@ class UserUpdate(BaseModel):
 class UserLogin(BaseModel):
     password: str = Field(min_length=8)
     email: EmailStr = Field(max_length=120)
+
+class UserInDB(UserBase):
+    id: int
+    hashed_password: str

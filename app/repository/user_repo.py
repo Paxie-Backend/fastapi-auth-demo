@@ -6,5 +6,5 @@ from app.schemas.user import UserCreate
 
 
 class AuthRepository(BaseRepository):
-    async def create_user(self, session, user_credentials: UserCreate)-> User:
+    async def create_user(self, session, user_creds: UserCreate)-> User:
         ...
