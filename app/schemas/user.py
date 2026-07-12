@@ -27,3 +27,6 @@ class UserInDB(UserBase):
     id: int
     hashed_password: str
 
+class UserCreateInternal(UserBase):
+    model_config = ConfigDict(from_attributes=True)
+    hashed_password: str
