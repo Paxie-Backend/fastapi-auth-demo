@@ -24,6 +24,8 @@ class UserLogin(BaseModel):
     email: EmailStr = Field(max_length=120)
 
 class UserInDB(UserBase):
+    model_config = ConfigDict(from_attributes=True)
+    
     id: int
     hashed_password: str
 
