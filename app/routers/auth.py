@@ -1,11 +1,16 @@
 from typing import Annotated
+
 from fastapi import APIRouter, Depends, status
-from app.schemas.user import UserLogin, UserCreate
-from app.core.database import get_session
-from app.schemas.user import UserResponse, UserCreate, UserLogin
-from app.schemas.token import Token
+from fastapi.security import OAuth2PasswordRequestForm
+
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.schemas.user import UserLogin, UserCreate, UserResponse, UserCreate, UserLogin
+from app.core.security.dependencies import oauth2_scheme
 from app.services.auth_service import AuthService
+from app.core.database import get_session
+from app.schemas.token import Token
+
 
 router = APIRouter()
 
@@ -23,12 +28,19 @@ async def register(
 
 @router.post("/login", response_model=Token, status_code=status.HTTP_200_OK)
 async def login(
-    user_creds: UserLogin,
+    user_creds: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: Annotated[AsyncSession, Depends(get_session)]):
     try:
-        user =  await AuthService(session).login(user_creds)
+        password = user_creds.username
+        email = user_creds.password
+        user = UserLogin(password=password, email=email)
+        user =  await AuthService(session).login(user)
         return user
     
     except Exception as e:
         raise e
 
+@router.get("/me", status_code=status.HTTP_200_OK)
+async def me(
+    token: Annotated[str, Depends(oauth2_scheme)]):
+    return {"msg": token}
