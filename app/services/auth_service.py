@@ -1,10 +1,19 @@
-from app.repository.user_repo import AuthRepository
-from app.schemas.user import UserResponse, UserCreate, UserLogin, UserCreateInternal
-from app.schemas.token import Token, TokenData
-from app.core.security.jwt_handlers import create_access_token, create_refresh_token, decode_token
-from app.core.security.utils import get_password_hash, verify_password
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from fastapi import  HTTPException, status
+
+from pydantic import ValidationError
+
+from app.schemas.user import UserResponse, UserCreate, UserLogin, UserCreateInternal
+from app.core.security.utils import get_password_hash, verify_password
+from app.schemas.token import Token, TokenData, TokenPayload
+from app.repository.user_repo import AuthRepository
+from app.core.security.jwt_handlers import (
+    create_access_token,
+    create_refresh_token,
+    decode_access_token,
+    decode_refresh_token
+    )
 
 
 class AuthService:
@@ -42,7 +51,7 @@ class AuthService:
                 detail="Password not match"
             )
         
-        access_token = create_access_token(email=user.email)
+        access_token = create_access_token(subject=user.email)
         refresh_token = create_refresh_token(subject=user.email)
         
         token = {
@@ -52,3 +61,28 @@ class AuthService:
         } 
         
         return Token(**token)
+    
+    async def refresh(self, refresh_token: str):
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token"
+        )
+        
+        try:
+            payload = decode_refresh_token(refresh_token)
+            token_payload = TokenPayload(**payload)
+            token_data = TokenData(email=token_payload.sub)
+        
+        except ValidationError:
+            raise credentials_exception
+        
+        user = await self.__auth_repository.get_user_by_email(email=token_data.email)
+        if user is None:
+            raise credentials_exception
+        
+        access_token = create_access_token(subject=user.email)
+        
+        return Token(
+            access_token=access_token,
+            token_type="bearer"
+        )

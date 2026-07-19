@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security.jwt_handlers import decode_token
+from app.core.security.jwt_handlers import decode_access_token
 from app.schemas.token import TokenPayload, TokenData
 from app.repository.user_repo import AuthRepository
 from app.core.database import get_session
@@ -28,11 +28,11 @@ async def get_current_user(
             )
     
     try:
-        payload = decode_token(token=token)
+        payload = decode_access_token(token=token)
         token_payload = TokenPayload(**payload)
         token_data = TokenData(email=token_payload.sub)
         
-        user = await AuthRepository(session).get_user_by_email(email=token_data.email) # type: ignore
+        user = await AuthRepository(session).get_user_by_email(email=token_data.email) 
         if user is None:
             raise credentials_exception
         
