@@ -15,7 +15,11 @@ from app.schemas.token import Token, RefreshTokenRequest
 router = APIRouter()
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+    response_model_exclude_none=True)
 async def register(
     user_creds: UserCreate,
     session: Annotated[AsyncSession, Depends(get_session)]
@@ -37,7 +41,12 @@ async def login(
         token =  await AuthService(session).login(credentials)
         return token
 
-@router.get("/me", response_model=UserInDB, status_code=status.HTTP_200_OK)
+@router.get(
+    "/me",
+    response_model=UserInDB,
+    status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True
+    )
 async def me(
     current_user: Annotated[UserInDB, Depends(get_current_user)]
     ):
