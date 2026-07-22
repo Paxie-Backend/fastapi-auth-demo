@@ -17,7 +17,8 @@ cd fastapi-auth-demo
     
 ## Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env file
+To run this project, you will need to add the following environment variables to your .env file.
+I intentionally include the .env file in the .gitignore and .dockerignore files to follow best practice.
 
 `SECRET_KEY=3c8d64fb5fa1d85a3ef5e691035f7c67`
 `JWT_SECRET_KEY=ATNE1jPTjgfKdU4qULWDSgA647VYQ73WCNutUk3i6jI`
