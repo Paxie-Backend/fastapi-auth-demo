@@ -6,7 +6,6 @@ from app.core.config import settings
 
 engine =  create_async_engine(
     settings.DATABASE_URL,
-    connect_args={"check_same_thread": False}
 )
 
 AsyncSessionLocal = async_sessionmaker(
