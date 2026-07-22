@@ -2,6 +2,7 @@
 # fastapi-auth-demo
 
 I created this project for the sake of learning JWT authentication, and how to containerize the FastAPI app using docker.
+If you want to test the endpoints, i suggest you to do it in postman instead.
 
 
 
